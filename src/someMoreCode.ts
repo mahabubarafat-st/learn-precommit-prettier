@@ -1,11 +1,9 @@
 
 
 const additionalInfoAboutUser =async (headers:any): Promise<any> => {
-    const user=headers['user'] ?    JSON.parse(headers['user']):null;
+    const user=headers['user'] ?  JSON.parse(headers[ 'user']):  null;
 
     return {
-
-
 
         userId: user ? user.id : null,
         ipAddress: user ? user.signedUpIp : null,
@@ -14,6 +12,7 @@ const additionalInfoAboutUser =async (headers:any): Promise<any> => {
         createdAt: user ? user.createdAt : null,
         updatedAt: user ? user.updatedAt : null,
         profile: user ? user.profile : null,
+        
     };
 }
 

@@ -1,7 +1,7 @@
 
 
 const additionalInfoAboutUser2 =async (headers:any): Promise<any> => {
-    const user=headers['user'] ?    JSON.parse(headers['user']):null;
+    const user=headers['user'] ?   JSON.parse(headers['user']):null;
 
     return {
 
