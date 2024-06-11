@@ -1,111 +1,105 @@
-When working on a project, it’s important to maintain a consistent coding style and avoid errors that can cause bugs. One way to achieve this is by using linting and formatting tools like ESLint and Prettier. In this article, we’ll cover how to set up these tools with the help of Husky and lint-staged, which will enable us to run these tools automatically on commit.
+# Auot Formating Code before commit
+## Method -1 
 
-Step 1: Install ESLint and Prettier
+Step 1: Install the necessary packages
 
-First, let’s install eslint and prettier-eslint as development dependencies in our project. You can use either npm or yarn to do this. Here’s an example using yarn:
+First, you need to install Prettier, Husky, and lint-staged. Run the following command in your project directory:
 
-yarn add --dev eslint prettier-eslint eslint-config-prettier eslint-plugin-prettier
+sh
 
-or
+npm install --save-dev prettier husky lint-staged
 
- npm i eslint prettier-eslint eslint-config-prettier eslint-plugin-prettier --save-dev
+Step 2: Configure Prettier
 
-Step 2: Create ESLint Configuration
+Create a .prettierrc file in the root of your project to define your Prettier configuration. For example:
 
-Next, let’s create an ESLint configuration file. You can do this by running:
-
-yarn eslint --init
-
-or,
-
-npm init @eslint/config
-
-This command will walk you through a series of questions to help set up your configuration. Here’s an example of how to answer these questions:
-
-    How would you like to use ESLint? To check syntax and find problems
-    What type of modules does your project use? JavaScript modules (import/export)
-    Which framework does your project use? None of these
-    Does your project use TypeScript? Yes
-    Where does your code run? Node
-    How would you like to define a style for your project? Use a popular style guide
-    Which style guide do you want to follow? Standard
-    What format do you want your config file to be in? JavaScript
-
-This will create an .eslintrc.js file in the root directory of your project.
-
-Step 3: Update your ESLint configuration
-
-Update your ESLint configuration file (usually .eslintrc.json or .eslintrc.js) to include the parser and parserOptions properties. Here's an example configuration that includes these properties:
+json
 
 {
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json",
-    "ecmaVersion": 2021,
-    "sourceType": "module"
-  },
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
-    "plugin:prettier/recommended"
-  ],
-  "plugins": ["@typescript-eslint", "prettier"],
-  "rules": {
-    "@typescript-eslint/dot-notation": "error"
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 80
+}
+
+Step 3: Add a script for Prettier in package.json
+
+Add a script to format your code with Prettier. Open your package.json file and add the following under the scripts section:
+
+json
+
+"scripts": {
+  "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
+}
+
+Step 4: Configure lint-staged
+
+Add a lint-staged configuration in your package.json to specify which files should be formatted with Prettier:
+
+json
+
+"lint-staged": {
+  "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "prettier --write"
+  ]
+}
+
+Step 5: Set up Husky to run lint-staged before every commit
+
+Husky makes it easy to use githooks as if they are npm scripts. Initialize Husky and add a pre-commit hook:
+
+sh
+
+npx husky install
+
+Then, add a pre-commit hook to run lint-staged. You can do this with Husky's command or by editing the husky configuration in your package.json.
+
+Using Husky's command:
+
+sh
+
+npx husky add .husky/pre-commit "npx lint-staged"
+
+Alternatively, add the following to your package.json:
+
+json
+
+"husky": {
+  "hooks": {
+    "pre-commit": "lint-staged"
   }
 }
 
-Step 4: Create Prettier Configuration
+Step 6: Verify the setup
 
-Now let’s create a Prettier configuration file. Create a file named .prettierrc.js in the root directory of your project with the following content:
+To verify that everything is working correctly, make a change to a file in the src directory and then attempt to commit it. Prettier should automatically format the file before the commit is completed.
+Example package.json
 
-module.exports = {
-  trailingComma: "es5",
-  singleQuote: true,
-  printWidth: 80,
-  tabWidth: 2,
-};
+Here's an example of what your package.json might look like after these configurations:
 
-You can adjust these options to fit your coding style preferences.
-
-Step 5: Install Husky and lint-staged
-
-Husky is a tool that allows us to set up Git hooks, which are scripts that run automatically when certain Git events occur. lint-staged is a tool that allows us to run ESLint and Prettier only on the files that are being committed.
-
-Let’s install these tools as development dependencies:
-
-yarn add --dev husky lint-staged
-
-or
-
-npm i  husky lint-staged --save-dev
-
-Step 6: Set up Git Hooks
-
-Now let’s set up the Git hooks with Husky. In your package.json file, add the following script:
+json
 
 {
+  "name": "your-project",
+  "version": "1.0.0",
   "scripts": {
-    "prepare": "husky install",
-    "format": "prettier-eslint --write \"src/**/*.ts\" \"test/**/*.ts\"",
-  }
-}
-
-This script installs the husky Git hooks when you run `yarn prepare`.
-
-Add the following configuration to your package.json file:
-
-{
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
+  },
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.0",
+    "prettier": "^2.0.0"
+  },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": ["yarn format"]
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
 
-This configuration tells lint-staged to run ESLint and Prettier on any JavaScript, TypeScript, or JSX files that are staged for a commit.
-
-Finally, add a new Git hook by running the following command:
-
-npx husky add .husky/pre-commit "yarn lint-staged"
-
-This command adds a new pre-commit Git hook that runs the lint-staged script before every commit.
+This setup will ensure that Prettier automatically formats your code every time you make a commit, maintaining code consistency across your project.
